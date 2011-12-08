@@ -8,7 +8,7 @@
  *
  *     http://qaa.ath.cx/
  *
- * (c) Copyright 2004-2008, Christopher J. McKenzie under
+ * (c) Copyright 2004-2008, 2011 Christopher J. McKenzie under
  *     the terms of the GNU Public License, incorporated
  *     herein by reference.
  */
@@ -18,92 +18,65 @@
 #include <unistd.h>
 
 const char
-	*light = "09ABCDEF",
-	*fallback= "xterm",
-	*order= "bfb",
-	*dark = "0123";
+  *lightColors = "6789ABCDEF",
+  *darkColors = "0121";
 
-char	*cmd = 0,
-	*xprog = 0;
+char *xprog = "xterm";
 
 extern char **environ;
 
-int main(int argc, char*argv[])
-{	
-	int 	lr = 0,	dr = 0,
-		lg = 0,	dg = 0,
-		lb = 0,	db = 0;
+int main(int argc, char*argv[]) {  
+  srand(time(0) * getpid());
 
-	short count_ix = 0, count = argc + 4;
+  int 
+    dark_red = rand() % 4,
+    dark_green = rand() % (4 - dark_red / 2),
+    dark_blue = rand() % (4 - (dark_red + dark_green) / 3),
+    light_red = dark_red + rand() % (10 - dark_red),
+    light_green = dark_green + rand() % (10 - dark_green),
+    light_blue = dark_blue + rand() % (10 - dark_blue);
 
-	char **myargs = (char**)malloc(sizeof(char*) * count);
+  short 
+    count_ix = 5, 
+    count = argc + count_ix;
 
-	myargs[count - 1] = 0;
+  char **myargs = (char**)malloc(sizeof(char*) * count);
 
-	srand(time(0) * getpid());
-	
-	if(!strcmp(argv[0] + strlen(argv[0]) - 5, "right"))
-	{
-		order ++;
-	}
+  myargs[count - 1] = 0;
+  
+  if(!strcmp(argv[0] + strlen(argv[0]) - 5, "right")) {
+    myargs[1] = "-fg";
+    myargs[3] = "-bg";
+  } else {
+    myargs[1] = "-bg";
+    myargs[3] = "-fg";
+  }
 
-	dr = rand() % 4;
-	dg = rand() % 4;
-	db = rand() % 4;
+  if(argc > 1) { 
+    xprog = argv[1];
+    argc--;
+    argv++;
+    count--;
+  } 
 
-	do
-	{
-		lr = rand() % 8;
-		lg = rand() % 8;
-		lb = rand() % 8;
-	}while(!(lr + lg + lb));
+  myargs[0] = xprog;
 
-	if(argc > 1)
-	{ 
-		xprog = argv[1];
-		argc--;
-		argv++;
-		count--;
-	}
-	else
-	{
-		xprog = (char*)fallback;
-	}
+  myargs[2] = (char*)malloc(10 * sizeof(char));
+  sprintf(myargs[2], "rgb:%c/%c/%c", 
+    darkColors[dark_red],
+    darkColors[dark_green],
+    darkColors[dark_blue]);
 
-	/*
-	 * From the execv manpage:
-	 * "The initial argument for these functions is the pathname of a file which is to be executed."
-	 */
-	myargs[count_ix] = xprog;
+  myargs[4] = (char*)malloc(10 * sizeof(char));
+  sprintf(myargs[4], "rgb:%c/%c/%c", 
+    lightColors[light_red],
+    lightColors[light_green],
+    lightColors[light_blue]);
 
-	count_ix++;
-	myargs[count_ix] = (char*)malloc(4 * sizeof(char));
-	sprintf(myargs[count_ix], "-%cg", order[0]);
+  for(;count_ix <= count; count_ix++) {  
+    argv++;
+    myargs[count_ix] = *argv;
+  }
 
-	count_ix++;
-	myargs[count_ix] = (char*)malloc(10 * sizeof(char));
-	sprintf(myargs[count_ix], "rgb:%c/%c/%c", 
-		dark[dr],
-		dark[dg],
-		dark[db]);
-
-	count_ix++;
-	myargs[count_ix] = (char*)malloc(4 * sizeof(char));
-	sprintf(myargs[count_ix], "-%cg", order[1]);
-
-	count_ix++;
-	myargs[count_ix] = (char*)malloc(10 * sizeof(char));
-	sprintf(myargs[count_ix], "rgb:%c/%c/%c", 
-		light[lr],
-		light[lg],
-		light[lb]);
-
-	count_ix++;
-	for(;count_ix <= count; count_ix++)
-	{	
-		argv++;
-		myargs[count_ix] = *argv;
-	}
-
-	execvp(xprog, myargs);
+  execvp(xprog, myargs);
 }
