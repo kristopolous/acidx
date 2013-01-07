@@ -5,4 +5,4 @@ Specifically designed to have a low memory footprint, it will wrap X programs su
 xterm and randomly determine the background and foreground colors for the program, 
 while keeping the color scheme legible.
 
-You can see a [screenshot here](http://qaa.ath.cx/acidx.png).
+You can see a [screenshot here](http://i.imgur.com/JmWoi.png)
