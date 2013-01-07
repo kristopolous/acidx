@@ -8,7 +8,7 @@
  *
  *     http://qaa.ath.cx/
  *
- * (c) Copyright 2004-2008, 2011 Christopher J. McKenzie under
+ * (c) Copyright 2004-2008, 2011, 2013 Christopher J. McKenzie under
  *     the terms of the GNU Public License, incorporated
  *     herein by reference.
  */
@@ -17,24 +17,73 @@
 #include <string.h>
 #include <unistd.h>
 
-const char
-  *lightColors = "6789ABCDEF",
-  *darkColors = "0121";
+#define MAX_OF_2(a, b)       (a) > (b) ? (a) : (b)
+#define MAX_OF_3(a, b, c)    MAX_OF_2(MAX_OF_2(a, b), c)
+
+#define MIN_OF_2(a, b)       (a) < (b) ? (a) : (b)
+#define MIN_OF_3(a, b, c)    MIN_OF_2(MIN_OF_2(a, b), c)
 
 char *xprog = "xterm";
 
 extern char **environ;
 
+typedef struct { unsigned char h, s, l; } hsl;
+typedef struct { unsigned char r, g, b; } rgb;
+
+float hue2rgb(float p, float q, float t){
+  if(t < 0) t += 1.0;
+  if(t > 1) t -= 1.0;
+  if(t < 1.0 / 6.0) return p + (q - p) * 6.0 * t;
+  if(t < 1.0 / 2.0) return q;
+  if(t < 2.0 / 3.0) return p + (q - p) * (2.0 / 3.0 - t) * 6.0;
+  return p;
+}
+
+void hsl2rgb(hsl in, rgb*out) {
+    float 
+      r, 
+      g, 
+      b,
+
+      h = in.h / 256.0,
+      s = in.s / 256.0,
+      l = in.l / 256.0;
+
+    if(s == 0.0){
+        r = g = b = l; // achromatic
+    } else {
+        float q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        float p = 2.0 * l - q;
+        r = hue2rgb(p, q, h + 1.0 / 3.0);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1.0 / 3.0);
+        printf("%f %f %f : %f %f %f\n", h ,s , l ,r, g, b);
+    }
+
+    out->r = r * 255.0;
+    out->g = g * 255.0;
+    out->b = b * 255.0;
+}
+
 int main(int argc, char*argv[]) {  
   srand(time(0) * getpid());
 
-  int 
-    dark_red = rand() % 4,
-    dark_green = rand() % (4 - dark_red / 2),
-    dark_blue = rand() % (4 - (dark_red + dark_green) / 3),
-    light_red = dark_red + rand() % (10 - dark_red),
-    light_green = dark_green + rand() % (10 - dark_green),
-    light_blue = dark_blue + rand() % (10 - dark_blue);
+  hsl 
+    h_bg = {
+      .h = 180 + rand() % 20,
+      .s = rand() % 32 + 32,
+      .l = rand() % 32 + 32
+    },
+    h_fg = {
+      .h = (h_bg.h - 10) + rand() % 20,
+      .s = rand() % 32 + h_bg.s / 2.0,
+      .l = MIN_OF_2(255, 112 + h_bg.l)
+    };
+  
+  rgb bg, fg;
+
+  hsl2rgb(h_bg, &bg); 
+  hsl2rgb(h_fg, &fg); 
 
   short 
     count_ix = 5, 
@@ -44,13 +93,8 @@ int main(int argc, char*argv[]) {
 
   myargs[count - 1] = 0;
   
-  if(!strcmp(argv[0] + strlen(argv[0]) - 5, "right")) {
-    myargs[1] = "-fg";
-    myargs[3] = "-bg";
-  } else {
-    myargs[1] = "-bg";
-    myargs[3] = "-fg";
-  }
+  myargs[1] = "-bg";
+  myargs[3] = "-fg";
 
   if(argc > 1) { 
     xprog = argv[1];
@@ -61,22 +105,25 @@ int main(int argc, char*argv[]) {
 
   myargs[0] = xprog;
 
-  myargs[2] = (char*)malloc(10 * sizeof(char));
-  sprintf(myargs[2], "rgb:%c/%c/%c", 
-    darkColors[dark_red],
-    darkColors[dark_green],
-    darkColors[dark_blue]);
+  myargs[2] = (char*)malloc(13 * sizeof(char));
+  sprintf(
+    myargs[2], 
+    "#%02x%02x%02x", 
+    bg.r, bg.g, bg.b
+  );
 
-  myargs[4] = (char*)malloc(10 * sizeof(char));
-  sprintf(myargs[4], "rgb:%c/%c/%c", 
-    lightColors[light_red],
-    lightColors[light_green],
-    lightColors[light_blue]);
+  myargs[4] = (char*)malloc(13 * sizeof(char));
+  sprintf(
+    myargs[4], 
+    "#%02x%02x%02x", 
+    fg.r, fg.g, fg.b
+  );
 
   for(;count_ix <= count; count_ix++) {  
     argv++;
     myargs[count_ix] = *argv;
   }
 
+  printf("%s %s\n", myargs[2], myargs[4]);
   execvp(xprog, myargs);
 }
