@@ -23,7 +23,7 @@
 #define MIN_OF_2(a, b)       (a) < (b) ? (a) : (b)
 #define MIN_OF_3(a, b, c)    MIN_OF_2(MIN_OF_2(a, b), c)
 
-char *xprog = "xterm";
+char *xprog = 0;
 
 extern char **environ;
 
@@ -57,7 +57,6 @@ void hsl2rgb(hsl in, rgb*out) {
         r = hue2rgb(p, q, h + 1.0 / 3.0);
         g = hue2rgb(p, q, h);
         b = hue2rgb(p, q, h - 1.0 / 3.0);
-        printf("%f %f %f : %f %f %f\n", h ,s , l ,r, g, b);
     }
 
     out->r = r * 255.0;
@@ -70,13 +69,13 @@ int main(int argc, char*argv[]) {
 
   hsl 
     h_bg = {
-      .h = 180 + rand() % 20,
-      .s = rand() % 32 + 32,
-      .l = rand() % 32 + 32
+      .h = 80 + rand() % 20,
+      .s = rand() % 32 + 16,
+      .l = rand() % 32 
     },
     h_fg = {
-      .h = (h_bg.h - 10) + rand() % 20,
-      .s = rand() % 32 + h_bg.s / 2.0,
+      .h = (((h_bg.h - 10) + rand() % 20) + 128) % 256,
+      .s = rand() % 64 + h_bg.s / 2.0,
       .l = MIN_OF_2(255, 112 + h_bg.l)
     };
   
@@ -96,15 +95,6 @@ int main(int argc, char*argv[]) {
   myargs[1] = "-bg";
   myargs[3] = "-fg";
 
-  if(argc > 1) { 
-    xprog = argv[1];
-    argc--;
-    argv++;
-    count--;
-  } 
-
-  myargs[0] = xprog;
-
   myargs[2] = (char*)malloc(13 * sizeof(char));
   sprintf(
     myargs[2], 
@@ -119,11 +109,21 @@ int main(int argc, char*argv[]) {
     fg.r, fg.g, fg.b
   );
 
+  if(argc > 1) { 
+    xprog = argv[1];
+    argc--;
+    argv++;
+    count--;
+  } else { 
+    printf("--bg=%s --fg=%s", myargs[2], myargs[4]);
+    exit(0);
+  }
+
+  myargs[0] = xprog;
   for(;count_ix <= count; count_ix++) {  
     argv++;
     myargs[count_ix] = *argv;
   }
 
-  printf("%s %s\n", myargs[2], myargs[4]);
   execvp(xprog, myargs);
 }
