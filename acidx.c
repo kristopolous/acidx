@@ -69,14 +69,14 @@ int main(int argc, char*argv[]) {
 
   hsl 
     h_bg = {
-      .h = 80 + rand() % 20,
-      .s = rand() % 32 + 16,
-      .l = rand() % 32 
+      .h = 190 + rand() % 10,
+      .s = rand() % 32 + 128,
+      .l = rand() % 32 + 5 
     },
     h_fg = {
-      .h = (((h_bg.h - 10) + rand() % 20) + 128) % 256,
-      .s = rand() % 64 + h_bg.s / 2.0,
-      .l = MIN_OF_2(255, 112 + h_bg.l)
+      .h = (((h_bg.h - 10) + rand() % 20) + (rand() % 2) * 32) % 256,
+      .s = MIN_OF_2(255, rand() % 64 + h_bg.s / 2.0),
+      .l = MIN_OF_2(255, 152 + h_bg.l)
     };
   
   rgb bg, fg;
