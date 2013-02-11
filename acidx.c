@@ -50,13 +50,15 @@ void hsl2rgb(hsl in, rgb*out) {
       l = in.l / 256.0;
 
     if(s == 0.0){
-        r = g = b = l; // achromatic
+      r = g = b = l; // achromatic
     } else {
-        float q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        float p = 2.0 * l - q;
-        r = hue2rgb(p, q, h + 1.0 / 3.0);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1.0 / 3.0);
+      float 
+        q = l < 0.5 ? l * (1 + s) : l + s - l * s,
+        p = 2.0 * l - q;
+
+      r = hue2rgb(p, q, h + 1.0 / 3.0);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1.0 / 3.0);
     }
 
     out->r = r * 255.0;
