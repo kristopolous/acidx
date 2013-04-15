@@ -72,13 +72,13 @@ int main(int argc, char*argv[]) {
   hsl 
     h_bg = {
       .h = 190 + rand() % 10,
-      .s = rand() % 32 + 128,
-      .l = rand() % 32 + 5 
+      .s = rand() % 32 + 90,
+      .l = rand() % 12 + 2 
     },
     h_fg = {
       .h = (((h_bg.h - 10) + rand() % 20) + (rand() % 2) * 32) % 256,
-      .s = MIN_OF_2(255, rand() % 64 + h_bg.s / 2.0),
-      .l = MIN_OF_2(255, 152 + h_bg.l)
+      .s = MIN_OF_2(255, 50 + rand() % 64 + h_bg.s / 2.0),
+      .l = MIN_OF_2(255, 222 + h_bg.l)
     };
   
   rgb bg, fg;
