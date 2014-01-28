@@ -117,7 +117,9 @@ int main(int argc, char*argv[]) {
     argv++;
     count--;
   } else { 
-    printf("--bg=%s --fg=%s", myargs[2], myargs[4]);
+    for(count_ix = 1; myargs[count_ix]; count_ix++) {
+      printf("%s ", myargs[count_ix]);
+    }
     exit(0);
   }
 
