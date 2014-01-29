@@ -118,7 +118,11 @@ int main(int argc, char*argv[]) {
     count--;
   } else { 
     for(count_ix = 1; myargs[count_ix]; count_ix++) {
-      printf("%s ", myargs[count_ix]);
+      if(count_ix % 2) {
+        printf("%s ", myargs[count_ix]);
+      } else {
+        printf("'%s' ", myargs[count_ix]);
+      }
     }
     exit(0);
   }
