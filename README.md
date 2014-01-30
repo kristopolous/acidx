@@ -4,3 +4,12 @@ Acidx is a simple wrapper for X applications that accept the -fg and -bg paramet
 
 Screenshot:
 <img src=http://i.imgur.com/JmWoi.png>
+
+# Usage
+
+acidx is a C program. If you run make and then just execute it, it will
+give you arguments that you can put into any application.  For instance,
+
+    acidx | xargs xterm
+    acidx | xargs xlogo
+
