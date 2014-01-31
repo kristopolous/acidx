@@ -8,9 +8,8 @@
  *
  *     https://github.com/kristopolous/acidx
  *
- * (c) Copyright 2004-2008, 2011, 2013 Christopher J. McKenzie under
- *     the terms of the GNU Public License, incorporated
- *     herein by reference.
+ * (c) Copyright 2004-2008, 2011, 2013-2014 Christopher J. McKenzie 
+ *     under the MIT license. See LICENSE.MIT for details.
  */
 #include <stdio.h>
 #include <stdlib.h>
