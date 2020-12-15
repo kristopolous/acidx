@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #define MAX_OF_2(a, b)       (a) > (b) ? (a) : (b)
 #define MAX_OF_3(a, b, c)    MAX_OF_2(MAX_OF_2(a, b), c)
@@ -30,7 +31,7 @@ extern char **environ;
 typedef struct { unsigned char h, s, l; } hsl;
 typedef struct { unsigned char r, g, b; } rgb;
 
-float hue2rgb(float p, float q, float t){
+float hue2rgb(float p, float q, float t) {
   if(t < 0) t += 1.0;
   if(t > 1) t -= 1.0;
   if(t < 1.0 / 6.0) return p + (q - p) * 6.0 * t;
@@ -40,30 +41,30 @@ float hue2rgb(float p, float q, float t){
 }
 
 void hsl2rgb(hsl in, rgb*out) {
+  float 
+    r, 
+    g, 
+    b,
+
+    h = in.h / 256.0,
+    s = in.s / 256.0,
+    l = in.l / 256.0;
+
+  if(s == 0.0){
+    r = g = b = l; // achromatic
+  } else {
     float 
-      r, 
-      g, 
-      b,
+      q = l < 0.5 ? l * (1 + s) : l + s - l * s,
+      p = 2.0 * l - q;
 
-      h = in.h / 256.0,
-      s = in.s / 256.0,
-      l = in.l / 256.0;
+    r = hue2rgb(p, q, h + 1.0 / 3.0);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1.0 / 3.0);
+  }
 
-    if(s == 0.0){
-      r = g = b = l; // achromatic
-    } else {
-      float 
-        q = l < 0.5 ? l * (1 + s) : l + s - l * s,
-        p = 2.0 * l - q;
-
-      r = hue2rgb(p, q, h + 1.0 / 3.0);
-      g = hue2rgb(p, q, h);
-      b = hue2rgb(p, q, h - 1.0 / 3.0);
-    }
-
-    out->r = r * 255.0;
-    out->g = g * 255.0;
-    out->b = b * 255.0;
+  out->r = r * 255.0;
+  out->g = g * 255.0;
+  out->b = b * 255.0;
 }
 
 int main(int argc, char*argv[]) {  
@@ -71,9 +72,9 @@ int main(int argc, char*argv[]) {
 
   hsl 
     h_bg = {
-      .h = 190 + rand() % 10,
-      .s = rand() % 32 + 128,
-      .l = rand() % 32 + 5 
+      .h = 80 + rand() % 140,
+      .s = rand() % 32 + 8,
+      .l = rand() % 16 + 28
     },
     h_fg = {
       .h = (((h_bg.h - 10) + rand() % 20) + (rand() % 2) * 32) % 256,
