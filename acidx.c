@@ -6,11 +6,10 @@
  *     xterm and randomly determine the background and foreground colors for the program, 
  *     while keeping the color scheme legible.
  *
- *     http://9ol.es
+ *     https://github.com/kristopolous/acidx
  *
  * (c) Copyright 2004-2020 Christopher J. McKenzie under
- *     the terms of the GNU Public License, incorporated
- *     herein by reference.
+ *     under the MIT license. See LICENSE.MIT for details.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -78,8 +77,8 @@ int main(int argc, char*argv[]) {
     },
     h_fg = {
       .h = (((h_bg.h - 10) + rand() % 20) + (rand() % 2) * 32) % 256,
-      .s = MIN_OF_2(255, rand() % 64 + h_bg.s / 2.0),
-      .l = MIN_OF_2(255, 152 + h_bg.l)
+      .s = MIN_OF_2(255, 50 + rand() % 64 + h_bg.s / 2.0),
+      .l = MIN_OF_2(255, 222 + h_bg.l)
     };
   
   rgb bg, fg;
@@ -118,7 +117,13 @@ int main(int argc, char*argv[]) {
     argv++;
     count--;
   } else { 
-    printf("--bg=%s --fg=%s", myargs[2], myargs[4]);
+    for(count_ix = 1; myargs[count_ix]; count_ix++) {
+      if(count_ix % 2) {
+        printf("%s ", myargs[count_ix]);
+      } else {
+        printf("'%s' ", myargs[count_ix]);
+      }
+    }
     exit(0);
   }
 
