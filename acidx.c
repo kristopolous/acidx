@@ -6,9 +6,9 @@
  *     xterm and randomly determine the background and foreground colors for the program, 
  *     while keeping the color scheme legible.
  *
- *     http://qaa.ath.cx/
+ *     http://9ol.es
  *
- * (c) Copyright 2004-2008, 2011, 2013 Christopher J. McKenzie under
+ * (c) Copyright 2004-2020 Christopher J. McKenzie under
  *     the terms of the GNU Public License, incorporated
  *     herein by reference.
  */
